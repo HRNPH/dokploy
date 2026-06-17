@@ -1,5 +1,7 @@
+import { db } from "@dokploy/server/db";
+import { auditLog } from "@dokploy/server/db/schema";
 import type { AuditAction, AuditResourceType } from "@dokploy/server/db/schema";
-import { createAuditLog } from "@dokploy/server/services/proprietary/audit-log";
+import { nanoid } from "nanoid";
 
 interface AuditCtx {
 	user: { id: string; email: string; role: string };
@@ -14,18 +16,21 @@ interface AuditEvent {
 	metadata?: Record<string, unknown>;
 }
 
-/**
- * Creates an audit log entry from a tRPC context.
- * Extracts userId, userEmail, userRole and organizationId automatically.
- *
- * Usage:
- *   await audit(ctx, { action: "create", resourceType: "project", resourceName: "my-app" });
- */
-export const audit = (ctx: AuditCtx, event: AuditEvent) =>
-	createAuditLog({
-		organizationId: ctx.session.activeOrganizationId,
-		userId: ctx.user.id,
-		userEmail: ctx.user.email,
-		userRole: ctx.user.role,
-		...event,
-	});
+export const audit = async (ctx: AuditCtx, event: AuditEvent) => {
+	try {
+		await db.insert(auditLog).values({
+			id: nanoid(),
+			organizationId: ctx.session.activeOrganizationId,
+			userId: ctx.user.id,
+			userEmail: ctx.user.email,
+			userRole: ctx.user.role,
+			action: event.action,
+			resourceType: event.resourceType,
+			resourceId: event.resourceId,
+			resourceName: event.resourceName,
+			metadata: event.metadata ? JSON.stringify(event.metadata) : null,
+		});
+	} catch (error) {
+		console.error("Failed to create audit log:", error);
+	}
+};

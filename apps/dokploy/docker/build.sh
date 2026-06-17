@@ -1,6 +1,7 @@
 #!/bin/bash
+# Build script for Dokploy-Ench
 
-# Determine the type of build based on the first script argument
+IMAGE_NAME="ghcr.io/hrnph/dokploy-ench"
 BUILD_TYPE=${1:-production}
 
 if [ "$BUILD_TYPE" == "canary" ]; then
@@ -12,6 +13,6 @@ fi
 
 BUILDER=$(docker buildx create --use)
 
-docker buildx build --platform linux/amd64,linux/arm64 --pull --rm -t "dokploy/dokploy:${TAG}" -f 'Dockerfile' .
+docker buildx build --platform linux/amd64,linux/arm64 --pull --rm -t "${IMAGE_NAME}:${TAG}" -f 'Dockerfile' .
 
 docker buildx rm $BUILDER

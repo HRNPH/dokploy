@@ -26,8 +26,7 @@ interface Props {
  */
 export const BuildsConcurrency = ({ serverId, label }: Props) => {
 	const { data: isCloud } = api.settings.isCloud.useQuery();
-	const { data: haveValidLicense } =
-		api.licenseKey.haveValidLicenseKey.useQuery();
+	const haveValidLicense = true;
 
 	const serverQuery = api.server.one.useQuery(
 		{ serverId: serverId ?? "" },

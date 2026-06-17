@@ -670,7 +670,7 @@ export const notificationRouter = createTRPCRouter({
 					input,
 					"Test Notification",
 					"",
-					"view, visit Dokploy on Github, https://github.com/dokploy/dokploy, clear=true;",
+					"view, visit Dokploy-Ench on Github, https://github.com/HRNPH/dokploy-ench, clear=true;",
 					"Hi, From Dokploy 👋",
 				);
 				return true;

@@ -4,8 +4,13 @@ import type { GetServerSidePropsContext } from "next";
 import type { ReactElement } from "react";
 import superjson from "superjson";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-import { LicenseKeySettings } from "@/components/proprietary/license-keys/license-key";
-import { Card } from "@/components/ui/card";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/card";
 import { appRouter } from "@/server/api/root";
 
 const Page = () => {
@@ -15,7 +20,19 @@ const Page = () => {
 				<Card className="h-full bg-sidebar p-2.5 rounded-xl mx-auto w-full">
 					<div className="rounded-xl bg-background shadow-md">
 						<div className="p-6">
-							<LicenseKeySettings />
+							<CardHeader>
+								<CardTitle className="text-xl">License</CardTitle>
+								<CardDescription>
+									All features are enabled. No license required.
+								</CardDescription>
+							</CardHeader>
+							<CardContent>
+								<p className="text-sm text-muted-foreground">
+									This is a community fork with all enterprise features
+									unlocked. SSO, whitelabeling, audit logs, and custom roles
+									are all available without a license key.
+								</p>
+							</CardContent>
 						</div>
 					</div>
 				</Card>

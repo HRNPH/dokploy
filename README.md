@@ -49,8 +49,8 @@ For detailed documentation, visit [docs.dokploy.com](https://docs.dokploy.com).
 
 ### Contributors 🤝
 
-<a href="https://github.com/dokploy/dokploy/graphs/contributors">
-  <img src="https://contrib.rocks/image?repo=dokploy/dokploy" alt="Contributors" />
+<a href="https://github.com/HRNPH/dokploy-ench/graphs/contributors">
+  <img src="https://contrib.rocks/image?repo=HRNPH/dokploy-ench" alt="Contributors" />
 </a>
 
 ## 📺 Video Tutorial

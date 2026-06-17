@@ -1,8 +1,7 @@
 import { api } from "@/utils/api";
 
 /**
- * Hook to access whitelabeling config for authenticated pages (dashboard, services, etc.).
- * Requires the user to be logged in.
+ * Hook to access whitelabeling config for authenticated pages.
  */
 export function useWhitelabeling() {
 	const { data, ...rest } = api.whitelabeling.get.useQuery(undefined, {
@@ -14,7 +13,7 @@ export function useWhitelabeling() {
 
 /**
  * Hook to access the public whitelabeling config.
- * Only for unauthenticated pages (login, register, error, invitation, password reset).
+ * For unauthenticated pages (login, register, error, etc.)
  */
 export function useWhitelabelingPublic() {
 	const { data, ...rest } = api.whitelabeling.getPublic.useQuery(undefined, {

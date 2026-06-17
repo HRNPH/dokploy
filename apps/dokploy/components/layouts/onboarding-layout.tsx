@@ -41,7 +41,7 @@ export const OnboardingLayout = ({ children }: Props) => {
 				</div>
 				<div className="flex items-center gap-4 justify-center absolute bottom-4 right-4 text-muted-foreground">
 					<Button variant="ghost" size="icon">
-						<Link href="https://github.com/dokploy/dokploy">
+						<Link href="https://github.com/HRNPH/dokploy-ench">
 							<GithubIcon />
 						</Link>
 					</Button>

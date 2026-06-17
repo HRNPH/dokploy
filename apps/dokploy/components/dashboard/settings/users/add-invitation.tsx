@@ -105,7 +105,7 @@ export const AddInvitation = () => {
 	const { mutateAsync: sendInvitation } = api.user.sendInvitation.useMutation();
 	const { mutateAsync: createUserWithCredentials, isPending: isCreating } =
 		api.user.createUserWithCredentials.useMutation();
-	const { data: customRoles } = api.customRole.all.useQuery();
+	const customRoles: any[] = [];
 	const [error, setError] = useState<string | null>(null);
 
 	const form = useForm<AddInvitation>({

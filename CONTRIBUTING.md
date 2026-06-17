@@ -56,7 +56,7 @@ Before you start, please make the clone based on the `canary` branch, since the 
 We use Node v24.4.0 and recommend this specific version. If you have nvm installed, you can run `nvm install 24.4.0 && nvm use` in the root directory.
 
 ```bash
-git clone https://github.com/dokploy/dokploy.git
+git clone https://github.com/HRNPH/dokploy-ench.git
 cd dokploy
 pnpm install
 cp apps/dokploy/.env.example apps/dokploy/.env

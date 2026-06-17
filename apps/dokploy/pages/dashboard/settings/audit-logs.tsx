@@ -4,7 +4,7 @@ import type { GetServerSidePropsContext } from "next";
 import type { ReactElement } from "react";
 import superjson from "superjson";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
-import { ShowAuditLogs } from "@/components/proprietary/audit-logs/show-audit-logs";
+import { ShowAuditLogs } from "@/components/audit-logs/show-audit-logs";
 import { appRouter } from "@/server/api/root";
 
 const Page = () => {
@@ -43,24 +43,9 @@ export async function getServerSideProps(ctx: GetServerSidePropsContext) {
 		transformer: superjson,
 	});
 
-	try {
-		const userPermissions = await helpers.user.getPermissions.fetch();
-
-		if (!userPermissions?.auditLog.read) {
-			return {
-				redirect: {
-					destination: "/dashboard/settings/profile",
-					permanent: false,
-				},
-			};
-		}
-
-		return {
-			props: {
-				trpcState: helpers.dehydrate(),
-			},
-		};
-	} catch {
-		return { props: {} };
-	}
+	return {
+		props: {
+			trpcState: helpers.dehydrate(),
+		},
+	};
 }

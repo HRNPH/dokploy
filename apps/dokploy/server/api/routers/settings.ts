@@ -49,6 +49,7 @@ import {
 	writeTraefikSetup,
 } from "@dokploy/server";
 import { db } from "@dokploy/server/db";
+import { FORK_DOCKER_IMAGE } from "@dokploy/server/constants/fork-config";
 import { checkPermission } from "@dokploy/server/services/permission";
 import { generateOpenApiDocument } from "@dokploy/trpc-openapi";
 import { TRPCError } from "@trpc/server";
@@ -79,7 +80,6 @@ import { appRouter } from "../root";
 import {
 	adminProcedure,
 	createTRPCRouter,
-	enterpriseProcedure,
 	protectedProcedure,
 	publicProcedure,
 } from "../trpc";
@@ -448,7 +448,7 @@ export const settingsRouter = createTRPCRouter({
 			return true;
 		}),
 
-	updateRemoteServersOnly: enterpriseProcedure
+	updateRemoteServersOnly: adminProcedure
 		.input(z.object({ remoteServersOnly: z.boolean() }))
 		.mutation(async ({ input, ctx }) => {
 			if (IS_CLOUD) {
@@ -497,7 +497,7 @@ export const settingsRouter = createTRPCRouter({
 			return true;
 		}),
 
-	updateEnforceSSO: enterpriseProcedure
+	updateEnforceSSO: adminProcedure
 		.input(z.object({ enforceSSO: z.boolean() }))
 		.mutation(async ({ input, ctx }) => {
 			if (IS_CLOUD) {
@@ -605,7 +605,7 @@ export const settingsRouter = createTRPCRouter({
 				"update",
 				"--force",
 				"--image",
-				`dokploy/dokploy:${data.latestVersion}`,
+				`${FORK_DOCKER_IMAGE}:${data.latestVersion}`,
 				"dokploy",
 			]);
 			await audit(ctx, {

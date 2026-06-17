@@ -2,6 +2,7 @@ import { createTRPCRouter } from "../api/trpc";
 import { adminRouter } from "./routers/admin";
 import { aiRouter } from "./routers/ai";
 import { applicationRouter } from "./routers/application";
+import { auditLogRouter } from "./routers/audit-log";
 import { backupRouter } from "./routers/backup";
 import { bitbucketRouter } from "./routers/bitbucket";
 import { certificateRouter } from "./routers/certificate";
@@ -28,12 +29,6 @@ import { portRouter } from "./routers/port";
 import { postgresRouter } from "./routers/postgres";
 import { previewDeploymentRouter } from "./routers/preview-deployment";
 import { projectRouter } from "./routers/project";
-import { auditLogRouter } from "./routers/proprietary/audit-log";
-import { customRoleRouter } from "./routers/proprietary/custom-role";
-import { forwardAuthRouter } from "./routers/proprietary/forward-auth";
-import { licenseKeyRouter } from "./routers/proprietary/license-key";
-import { ssoRouter } from "./routers/proprietary/sso";
-import { whitelabelingRouter } from "./routers/proprietary/whitelabeling";
 import { redirectsRouter } from "./routers/redirects";
 import { redisRouter } from "./routers/redis";
 import { registryRouter } from "./routers/registry";
@@ -43,11 +38,13 @@ import { securityRouter } from "./routers/security";
 import { serverRouter } from "./routers/server";
 import { settingsRouter } from "./routers/settings";
 import { sshRouter } from "./routers/ssh-key";
+import { ssoRouter } from "./routers/sso";
 import { stripeRouter } from "./routers/stripe";
 import { swarmRouter } from "./routers/swarm";
 import { tagRouter } from "./routers/tag";
 import { userRouter } from "./routers/user";
 import { volumeBackupsRouter } from "./routers/volume-backups";
+import { whitelabelingRouter } from "./routers/whitelabeling";
 /**
  * This is the primary router for your server.
  *
@@ -92,11 +89,8 @@ export const appRouter = createTRPCRouter({
 	user: userRouter,
 	ai: aiRouter,
 	organization: organizationRouter,
-	licenseKey: licenseKeyRouter,
 	sso: ssoRouter,
-	forwardAuth: forwardAuthRouter,
 	whitelabeling: whitelabelingRouter,
-	customRole: customRoleRouter,
 	auditLog: auditLogRouter,
 	schedule: scheduleRouter,
 	rollback: rollbackRouter,

@@ -49,12 +49,9 @@ export const ChangeRole = ({ memberId, currentRole, userEmail }: Props) => {
 	const [isOpen, setIsOpen] = useState(false);
 	const utils = api.useUtils();
 
-	const { data: customRoles } = api.customRole.all.useQuery(undefined, {
-		enabled: isOpen,
-	});
-
 	const { mutateAsync, isError, error, isPending } =
 		api.organization.updateMemberRole.useMutation();
+	const customRoles: any[] = [];
 
 	const form = useForm<ChangeRoleSchema>({
 		defaultValues: {

@@ -15,7 +15,6 @@ import {
 	getTrustedProviders,
 	getUserByToken,
 } from "../services/admin";
-import { createAuditLog } from "../services/proprietary/audit-log";
 import {
 	getWebServerSettings,
 	updateWebServerSettings,
@@ -302,50 +301,12 @@ const { handler, api } = betterAuth({
 					};
 				},
 				after: async (session) => {
-					const orgId = (
-						session as typeof session & { activeOrganizationId?: string }
-					).activeOrganizationId;
-					if (!orgId) return;
-					const memberRecord = await db.query.member.findFirst({
-						where: and(
-							eq(schema.member.userId, session.userId),
-							eq(schema.member.organizationId, orgId),
-						),
-						with: { user: true },
-					});
-					if (!memberRecord) return;
-					await createAuditLog({
-						organizationId: orgId,
-						userId: session.userId,
-						userEmail: memberRecord.user.email,
-						userRole: memberRecord.role,
-						action: "login",
-						resourceType: "session",
-					});
+					// Audit log will be reimplemented
 				},
 			},
 			delete: {
 				after: async (session) => {
-					const orgId = (
-						session as typeof session & { activeOrganizationId?: string }
-					).activeOrganizationId;
-					if (!orgId) return;
-					const memberRecord = await db.query.member.findFirst({
-						where: and(
-							eq(schema.member.userId, session.userId),
-							eq(schema.member.organizationId, orgId),
-						),
-						with: { user: true },
-					});
-					if (!memberRecord) return;
-					await createAuditLog({
-						organizationId: orgId,
-						userId: session.userId,
-						userEmail: memberRecord.user.email,
-						userRole: memberRecord.role,
-						action: "logout",
-						resourceType: "session",
-					});
+					// Audit log will be reimplemented
 				},
 			},
 		},
@@ -380,16 +341,6 @@ const { handler, api } = betterAuth({
 				required: false,
 				input: true,
 				defaultValue: "",
-			},
-			enableEnterpriseFeatures: {
-				type: "boolean",
-				required: false,
-				input: false,
-			},
-			isValidEnterpriseLicense: {
-				type: "boolean",
-				required: false,
-				input: false,
 			},
 		},
 	},
@@ -511,8 +462,6 @@ export const validateRequest = async (request: IncomingMessage) => {
 					twoFactorEnabled: userFromDb.twoFactorEnabled,
 					role: member?.role || "member",
 					ownerId: member?.organization.ownerId || apiKeyRecord.user.id,
-					enableEnterpriseFeatures: userFromDb.enableEnterpriseFeatures,
-					isValidEnterpriseLicense: userFromDb.isValidEnterpriseLicense,
 				},
 			};
 
@@ -561,10 +510,6 @@ export const validateRequest = async (request: IncomingMessage) => {
 		});
 
 		session.user.role = member?.role || "member";
-		session.user.enableEnterpriseFeatures =
-			member?.user.enableEnterpriseFeatures || false;
-		session.user.isValidEnterpriseLicense =
-			member?.user.isValidEnterpriseLicense || false;
 		session.session.activeOrganizationId = member?.organization.id || "";
 		if (member) {
 			session.user.ownerId = member.organization.ownerId;

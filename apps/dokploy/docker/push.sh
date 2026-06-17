@@ -1,19 +1,16 @@
 #!/bin/bash
+# Push script for Dokploy-Ench
 
-# Determine the type of build based on the first script argument
+IMAGE_NAME="ghcr.io/hrnph/dokploy-ench"
 BUILD_TYPE=${1:-production}
-
-BUILDER=$(docker buildx create --use)
 
 if [ "$BUILD_TYPE" == "canary" ]; then
     TAG="canary"
-    echo PUSHING CANARY
-        docker buildx build --platform linux/amd64,linux/arm64 --pull --rm -t "dokploy/dokploy:${TAG}" -f 'Dockerfile' --push .
+    docker buildx build --platform linux/amd64,linux/arm64 --pull --rm -t "${IMAGE_NAME}:${TAG}" -f 'Dockerfile' --push .
+elif [ "$BUILD_TYPE" == "feature" ]; then
+    TAG="feature"
+    docker buildx build --platform linux/amd64,linux/arm64 --pull --rm -t "${IMAGE_NAME}:${TAG}" -f 'Dockerfile' --push .
 else
-    echo  "PUSHING PRODUCTION"
     VERSION=$(node -p "require('./package.json').version")
-    docker buildx build --platform linux/amd64,linux/arm64 --pull --rm -t "dokploy/dokploy:latest" -t "dokploy/dokploy:${VERSION}" -f 'Dockerfile' --push .
+    docker buildx build --platform linux/amd64,linux/arm64 --pull --rm -t "${IMAGE_NAME}:latest" -t "${IMAGE_NAME}:${VERSION}" -f 'Dockerfile' --push .
 fi
-
-docker buildx rm $BUILDER
-

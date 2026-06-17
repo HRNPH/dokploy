@@ -37,8 +37,6 @@ export const ShowUsers = () => {
 	const { data, isPending, refetch } = api.user.all.useQuery();
 	const { mutateAsync } = api.user.remove.useMutation();
 	const { data: permissions } = api.user.getPermissions.useQuery();
-	const { data: hasValidLicense } =
-		api.licenseKey.haveValidLicenseKey.useQuery();
 
 	const utils = api.useUtils();
 	const { data: session } = api.user.session.useQuery();
@@ -47,8 +45,7 @@ export const ShowUsers = () => {
 	const membersWithCustomRoles = data?.filter(
 		(member) => !FREE_ROLES.includes(member.role),
 	);
-	const hasCustomRolesWithoutLicense =
-		!hasValidLicense && (membersWithCustomRoles?.length ?? 0) > 0;
+	const hasCustomRolesWithoutLicense = false;
 
 	return (
 		<div className="w-full">

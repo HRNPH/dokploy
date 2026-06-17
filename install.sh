@@ -5,7 +5,7 @@
 
 set -e
 
-GITHUB_REPO="HRNPH/dokploy-ench"
+GITHUB_REPO="HRNPH/dokploy"
 IMAGE_NAME="ghcr.io/hrnph/dokploy-ench"
 
 detect_version() {

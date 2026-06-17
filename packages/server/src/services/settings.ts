@@ -51,7 +51,7 @@ export const getUpdateData = async (
 ): Promise<IUpdateData> => {
 	try {
 		// Use GitHub releases API to check for updates
-		const releasesUrl = `https://api.github.com/repos/HRNPH/dokploy-ench/releases?per_page=10`;
+		const releasesUrl = `https://api.github.com/repos/HRNPH/dokploy/releases?per_page=10`;
 
 		const response = await fetch(releasesUrl, {
 			method: "GET",

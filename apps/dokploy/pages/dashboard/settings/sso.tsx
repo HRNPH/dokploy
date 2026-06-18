@@ -6,6 +6,7 @@ import superjson from "superjson";
 import { ToggleEnforceSSO } from "@/components/dashboard/settings/servers/actions/toggle-enforce-sso";
 import { ToggleRemoteServersOnly } from "@/components/dashboard/settings/servers/actions/toggle-remote-servers-only";
 import { DashboardLayout } from "@/components/layouts/dashboard-layout";
+import { ForwardAuthConfig } from "@/components/sso/forward-auth-config";
 import { SSOSettings } from "@/components/sso/sso-settings";
 import {
 	Card,
@@ -28,6 +29,13 @@ const Page = ({ isCloud }: Props) => {
 					<div className="rounded-xl bg-background shadow-md">
 						<div className="p-6">
 							<SSOSettings />
+						</div>
+					</div>
+				</Card>
+				<Card className="h-full bg-sidebar p-2.5 rounded-xl mx-auto w-full">
+					<div className="rounded-xl bg-background shadow-md">
+						<div className="p-6">
+							<ForwardAuthConfig />
 						</div>
 					</div>
 				</Card>

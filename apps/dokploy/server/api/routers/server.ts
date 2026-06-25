@@ -47,12 +47,14 @@ import {
 } from "@/server/db/schema";
 import { assertBuildsConcurrencyAllowed } from "@/server/queues/concurrency";
 import { applyDockerCleanupSchedule } from "@/server/utils/docker-cleanup";
+import { enforceQuota } from "@dokploy/server/services/quota";
 
 export const serverRouter = createTRPCRouter({
 	create: withPermission("server", "create")
 		.input(apiCreateServer)
 		.mutation(async ({ ctx, input }) => {
 			try {
+				await enforceQuota(ctx.session.activeOrganizationId, "servers");
 				const user = await findUserById(ctx.user.ownerId);
 				const servers = await findServersByUserId(user.id);
 				if (IS_CLOUD && servers.length >= user.serversQuantity) {

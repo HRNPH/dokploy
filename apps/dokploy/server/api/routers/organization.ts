@@ -13,6 +13,7 @@ import {
 	user,
 } from "@/server/db/schema";
 import { createTRPCRouter, protectedProcedure, withPermission } from "../trpc";
+import { enforceQuota } from "@dokploy/server/services/quota";
 export const organizationRouter = createTRPCRouter({
 	create: protectedProcedure
 		.input(
@@ -256,6 +257,7 @@ export const organizationRouter = createTRPCRouter({
 		)
 		.mutation(async ({ ctx, input }) => {
 			const orgId = ctx.session.activeOrganizationId;
+			await enforceQuota(orgId, "members");
 			const email = input.email.toLowerCase();
 
 			// Check if user is already a member

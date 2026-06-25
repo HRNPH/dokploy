@@ -30,6 +30,7 @@ import { portRouter } from "./routers/port";
 import { postgresRouter } from "./routers/postgres";
 import { previewDeploymentRouter } from "./routers/preview-deployment";
 import { projectRouter } from "./routers/project";
+import { quotaRouter } from "./routers/quota";
 import { redirectsRouter } from "./routers/redirects";
 import { redisRouter } from "./routers/redis";
 import { registryRouter } from "./routers/registry";
@@ -79,6 +80,7 @@ export const appRouter = createTRPCRouter({
 	postgres: postgresRouter,
 	previewDeployment: previewDeploymentRouter,
 	project: projectRouter,
+	quota: quotaRouter,
 	redirects: redirectsRouter,
 	redis: redisRouter,
 	registry: registryRouter,

@@ -75,6 +75,7 @@ import {
 	myQueue,
 } from "@/server/queues/queueSetup";
 import { cancelDeployment, deploy } from "@/server/utils/deploy";
+import { enforceQuota } from "@dokploy/server/services/quota";
 
 export const applicationRouter = createTRPCRouter({
 	create: protectedProcedure
@@ -85,6 +86,7 @@ export const applicationRouter = createTRPCRouter({
 				const project = await findProjectById(environment.projectId);
 
 				await checkServiceAccess(ctx, project.projectId, "create");
+				await enforceQuota(ctx.session.activeOrganizationId, "services");
 
 				const webServerSettings = await getWebServerSettings();
 				if (

@@ -48,6 +48,7 @@ import {
 	withPermission,
 } from "@/server/api/trpc";
 import { audit } from "@/server/api/utils/audit";
+import { enforceQuota } from "@dokploy/server/services/quota";
 import {
 	apiCreateProject,
 	apiFindOneProject,
@@ -71,6 +72,7 @@ export const projectRouter = createTRPCRouter({
 		.mutation(async ({ ctx, input }) => {
 			try {
 				await checkProjectAccess(ctx, "create");
+				await enforceQuota(ctx.session.activeOrganizationId, "projects");
 
 				const admin = await findUserById(ctx.user.ownerId);
 

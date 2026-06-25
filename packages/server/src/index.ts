@@ -36,6 +36,7 @@ export * from "./services/port";
 export * from "./services/postgres";
 export * from "./services/preview-deployment";
 export * from "./services/project";
+export * from "./services/quota";
 export * from "./services/redirect";
 export * from "./services/redis";
 export * from "./services/registry";

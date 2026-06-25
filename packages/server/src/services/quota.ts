@@ -2,13 +2,14 @@ import { db } from "@dokploy/server/db";
 import {
 	applications,
 	compose,
+	environments,
 	member,
 	organizationQuota,
 	projects,
 	server,
 } from "@dokploy/server/db/schema";
 import { TRPCError } from "@trpc/server";
-import { eq, sql } from "drizzle-orm";
+import { and, eq, sql } from "drizzle-orm";
 
 export const getOrCreateQuota = async (organizationId: string) => {
 	let quota = await db.query.organizationQuota.findFirst({
@@ -30,8 +31,6 @@ export const setQuota = async (
 	organizationId: string,
 	updates: Partial<typeof organizationQuota.$inferInsert>,
 ) => {
-	const existing = await getOrCreateQuota(organizationId);
-
 	const [updated] = await db
 		.update(organizationQuota)
 		.set({ ...updates, updatedAt: new Date() })
@@ -51,34 +50,44 @@ export interface UsageSnapshot {
 export const getUsage = async (
 	organizationId: string,
 ): Promise<UsageSnapshot> => {
-	const [projectCount, appCount, composeCount, serverCount, memberCount] =
-		await Promise.all([
-			db
-				.select({ count: sql<number>`count(*)::int` })
-				.from(projects)
-				.where(eq(projects.organizationId, organizationId))
-				.then((r) => r[0]?.count ?? 0),
-			db
-				.select({ count: sql<number>`count(*)::int` })
-				.from(applications)
-				.where(eq(applications.organizationId, organizationId))
-				.then((r) => r[0]?.count ?? 0),
-			db
-				.select({ count: sql<number>`count(*)::int` })
-				.from(compose)
-				.where(eq(compose.organizationId, organizationId))
-				.then((r) => r[0]?.count ?? 0),
-			db
-				.select({ count: sql<number>`count(*)::int` })
-				.from(server)
-				.where(eq(server.organizationId, organizationId))
-				.then((r) => r[0]?.count ?? 0),
-			db
-				.select({ count: sql<number>`count(*)::int` })
-				.from(member)
-				.where(eq(member.organizationId, organizationId))
-				.then((r) => r[0]?.count ?? 0),
-		]);
+	// Count projects directly
+	const projectCount = await db
+		.select({ count: sql<number>`count(*)::int` })
+		.from(projects)
+		.where(eq(projects.organizationId, organizationId))
+		.then((r) => r[0]?.count ?? 0);
+
+	// Count applications through environment -> project
+	const appCount = await db
+		.select({ count: sql<number>`count(*)::int` })
+		.from(applications)
+		.innerJoin(environments, eq(applications.environmentId, environments.environmentId))
+		.innerJoin(projects, eq(environments.projectId, projects.projectId))
+		.where(eq(projects.organizationId, organizationId))
+		.then((r) => r[0]?.count ?? 0);
+
+	// Count compose services through environment -> project
+	const composeCount = await db
+		.select({ count: sql<number>`count(*)::int` })
+		.from(compose)
+		.innerJoin(environments, eq(compose.environmentId, environments.environmentId))
+		.innerJoin(projects, eq(environments.projectId, projects.projectId))
+		.where(eq(projects.organizationId, organizationId))
+		.then((r) => r[0]?.count ?? 0);
+
+	// Count servers directly
+	const serverCount = await db
+		.select({ count: sql<number>`count(*)::int` })
+		.from(server)
+		.where(eq(server.organizationId, organizationId))
+		.then((r) => r[0]?.count ?? 0);
+
+	// Count members directly
+	const memberCount = await db
+		.select({ count: sql<number>`count(*)::int` })
+		.from(member)
+		.where(eq(member.organizationId, organizationId))
+		.then((r) => r[0]?.count ?? 0);
 
 	return {
 		projects: projectCount,
@@ -99,10 +108,10 @@ export const enforceQuota = async (
 	const usage = await getUsage(organizationId);
 
 	const limits: Record<Resource, number> = {
-		projects: quota.maxProjects,
-		services: quota.maxServices,
-		servers: quota.maxServers,
-		members: quota.maxMembers,
+		projects: quota?.maxProjects ?? 10,
+		services: quota?.maxServices ?? 20,
+		servers: quota?.maxServers ?? 3,
+		members: quota?.maxMembers ?? 5,
 	};
 
 	const current = usage[resource];

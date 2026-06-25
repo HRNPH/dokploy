@@ -41,7 +41,7 @@ describe("getAccessibleGitProviderIds", () => {
 			role: "owner",
 			accessedGitProviders: [],
 		});
-		const result = await getAccessibleGitProviderIds(ORG_ID, USER_OWNER);
+		const result = await getAccessibleGitProviderIds({ userId: USER_OWNER, activeOrganizationId: ORG_ID });
 		expect(result.size).toBe(3);
 	});
 
@@ -50,7 +50,7 @@ describe("getAccessibleGitProviderIds", () => {
 			role: "admin",
 			accessedGitProviders: [],
 		});
-		const result = await getAccessibleGitProviderIds(ORG_ID, USER_ADMIN);
+		const result = await getAccessibleGitProviderIds({ userId: USER_ADMIN, activeOrganizationId: ORG_ID });
 		expect(result.size).toBe(3);
 	});
 
@@ -59,7 +59,7 @@ describe("getAccessibleGitProviderIds", () => {
 			role: "member",
 			accessedGitProviders: ["gp-1"],
 		});
-		const result = await getAccessibleGitProviderIds(ORG_ID, USER_MEMBER);
+		const result = await getAccessibleGitProviderIds({ userId: USER_MEMBER, activeOrganizationId: ORG_ID });
 		expect(result.has("gp-1")).toBe(true); // assigned
 		expect(result.has("gp-2")).toBe(true); // shared
 		expect(result.has("gp-3")).toBe(true); // owned
@@ -70,7 +70,7 @@ describe("getAccessibleGitProviderIds", () => {
 			role: "member",
 			accessedGitProviders: [],
 		});
-		const result = await getAccessibleGitProviderIds(ORG_ID, USER_MEMBER_2);
+		const result = await getAccessibleGitProviderIds({ userId: USER_MEMBER_2, activeOrganizationId: ORG_ID });
 		expect(result.has("gp-1")).toBe(false);
 		expect(result.has("gp-2")).toBe(true); // shared
 		expect(result.has("gp-3")).toBe(false);

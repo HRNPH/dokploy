@@ -26,6 +26,7 @@ export * from "./port";
 export * from "./postgres";
 export * from "./preview-deployments";
 export * from "./project";
+export * from "./quota";
 export * from "./redirects";
 export * from "./redis";
 export * from "./registry";

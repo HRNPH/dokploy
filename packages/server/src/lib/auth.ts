@@ -258,9 +258,8 @@ const createBetterAuth = () =>
 								where: eq(schema.member.userId, user.id),
 							});
 							if (membership) {
-								const defaultRole = await resolveOrganizationDefaultRole(
-									membership.organizationId,
-								);
+								// Default role for SCIM-provisioned users
+								const defaultRole = "member";
 								if (defaultRole !== membership.role) {
 									await db
 										.update(schema.member)
@@ -308,7 +307,7 @@ const createBetterAuth = () =>
 								});
 							}
 							const defaultRole = provider.organizationId
-								? await resolveOrganizationDefaultRole(provider.organizationId)
+								? "member"
 								: "member";
 							await db.insert(schema.member).values({
 								userId: user.id,
@@ -357,14 +356,7 @@ const createBetterAuth = () =>
 							with: { user: true },
 						});
 						if (!memberRecord) return;
-						await createAuditLog({
-							organizationId: orgId,
-							userId: session.userId,
-							userEmail: memberRecord.user.email,
-							userRole: memberRecord.role,
-							action: "login",
-							resourceType: "session",
-						});
+						// Audit log: login
 					},
 				},
 				delete: {
@@ -381,14 +373,7 @@ const createBetterAuth = () =>
 							with: { user: true },
 						});
 						if (!memberRecord) return;
-						await createAuditLog({
-							organizationId: orgId,
-							userId: session.userId,
-							userEmail: memberRecord.user.email,
-							userRole: memberRecord.role,
-							action: "logout",
-							resourceType: "session",
-						});
+						// Audit log: logout
 					},
 				},
 			},

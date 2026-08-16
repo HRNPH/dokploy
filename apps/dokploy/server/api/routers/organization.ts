@@ -1,6 +1,5 @@
 import { db } from "@dokploy/server/db";
 import {
-	hasValidLicense,
 	IS_CLOUD,
 	sendInvitationEmail,
 } from "@dokploy/server/index";
@@ -199,13 +198,7 @@ export const organizationRouter = createTRPCRouter({
 						});
 					}
 
-					if (!(await hasValidLicense(input.organizationId))) {
-						throw new TRPCError({
-							code: "FORBIDDEN",
-							message:
-								"Setting a custom role as default requires a valid enterprise license",
-						});
-					}
+					// No license gating - all features available
 				}
 			}
 

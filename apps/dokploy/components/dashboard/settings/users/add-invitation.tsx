@@ -132,6 +132,16 @@ export const AddInvitation = () => {
 		}
 	}, [form, isCloud]);
 
+	useEffect(() => {
+		if (
+			activeOrganization?.defaultRole &&
+			activeOrganization.defaultRole !== "owner" &&
+			!form.formState.dirtyFields.role
+		) {
+			form.setValue("role", activeOrganization.defaultRole);
+		}
+	}, [form, activeOrganization?.defaultRole]);
+
 	const onSubmit = async (data: AddInvitation) => {
 		setError(null);
 
@@ -267,10 +277,7 @@ export const AddInvitation = () => {
 								return (
 									<FormItem>
 										<FormLabel>Role</FormLabel>
-										<Select
-											onValueChange={field.onChange}
-											defaultValue={field.value}
-										>
+										<Select onValueChange={field.onChange} value={field.value}>
 											<FormControl>
 												<SelectTrigger>
 													<SelectValue placeholder="Select a role" />

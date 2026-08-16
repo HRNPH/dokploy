@@ -22,6 +22,7 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
+import { pushToDataLayer } from "@/lib/analytics";
 import { authClient } from "@/lib/auth-client";
 import { useWhitelabelingPublic } from "@/utils/hooks/use-whitelabeling";
 
@@ -114,6 +115,7 @@ const Register = ({ isCloud }: Props) => {
 			if (!isCloud) {
 				router.push("/");
 			} else {
+				pushToDataLayer("sign_up", { method: "email" });
 				setData(data);
 			}
 		}
@@ -156,14 +158,15 @@ const Register = ({ isCloud }: Props) => {
 								</span>
 							</AlertBlock>
 						)}
-					<CardContent className="p-0">
-						{isCloud && (
+						<CardContent className="p-0">
+							{isCloud && (
 								<p className="mb-4 text-center text-xs text-muted-foreground">
 									Or register with email
 								</p>
 							)}
 							<Form {...form}>
 								<form
+									method="post"
 									onSubmit={form.handleSubmit(onSubmit)}
 									className="grid gap-4"
 								>
@@ -285,7 +288,12 @@ const Register = ({ isCloud }: Props) => {
 export default Register;
 
 Register.getLayout = (page: ReactElement) => {
-	return <OnboardingLayout>{page}</OnboardingLayout>;
+	const isCloud = (page.props as Props).isCloud;
+	return (
+		<OnboardingLayout>
+			{page}
+		</OnboardingLayout>
+	);
 };
 export async function getServerSideProps(context: GetServerSidePropsContext) {
 	if (IS_CLOUD) {

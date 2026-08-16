@@ -9,6 +9,7 @@ import {
 	getPublicIpWithFallback,
 	haveActiveServices,
 	IS_CLOUD,
+	redactServerSshKey,
 	removeDeploymentsByServerId,
 	serverAudit,
 	serverSetup,
@@ -45,7 +46,6 @@ import {
 	redis,
 	server,
 } from "@/server/db/schema";
-import { assertBuildsConcurrencyAllowed } from "@/server/queues/concurrency";
 import { applyDockerCleanupSchedule } from "@/server/utils/docker-cleanup";
 import { enforceQuota } from "@dokploy/server/services/quota";
 
@@ -107,7 +107,7 @@ export const serverRouter = createTRPCRouter({
 				});
 			}
 
-			return server;
+			return redactServerSshKey(server);
 		}),
 	getDefaultCommand: withPermission("server", "read")
 		.input(apiFindOneServer)
@@ -404,6 +404,14 @@ export const serverRouter = createTRPCRouter({
 		.input(apiRemoveServer)
 		.mutation(async ({ input, ctx }) => {
 			try {
+				const currentServer = await findServerById(input.serverId);
+				if (currentServer.organizationId !== ctx.session.activeOrganizationId) {
+					throw new TRPCError({
+						code: "UNAUTHORIZED",
+						message: "You are not authorized to delete this server",
+					});
+				}
+
 				const activeServers = await haveActiveServices(input.serverId);
 
 				if (activeServers) {
@@ -412,7 +420,6 @@ export const serverRouter = createTRPCRouter({
 						message: "Server has active services, please delete them first",
 					});
 				}
-				const currentServer = await findServerById(input.serverId);
 				await audit(ctx, {
 					action: "delete",
 					resourceType: "server",
@@ -428,7 +435,7 @@ export const serverRouter = createTRPCRouter({
 					await updateServersBasedOnQuantity(admin.id, admin.serversQuantity);
 				}
 
-				return currentServer;
+				return redactServerSshKey(currentServer);
 			} catch (error) {
 				throw error;
 			}
@@ -482,10 +489,6 @@ export const serverRouter = createTRPCRouter({
 					message: "You are not authorized to update this server",
 				});
 			}
-			await assertBuildsConcurrencyAllowed(
-				input.buildsConcurrency,
-				ctx.session.activeOrganizationId,
-			);
 			return await updateServerById(input.serverId, {
 				buildsConcurrency: input.buildsConcurrency,
 			});
